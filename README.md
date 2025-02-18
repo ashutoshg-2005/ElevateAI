@@ -1,36 +1,141 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Elevate-AI
 
-## Getting Started
+Elevate-AI is an AI-powered career growth platform that provides industry insights, resume building, and professional development tools. It is built using **React (Frontend)**, **Next.js (Backend)**, and integrates **Gemini API** for AI insights and resume generation. Additionally, it leverages **Inngest API** for weekly updates and **Clerk** for authentication.
 
-First, run the development server:
+## 🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### 📊 Industry Insights & Dashboard
+
+- Get real-time industry trends, market outlook, and key insights.
+- AI-powered analysis of industry growth, demand levels, and top skills.
+- Salary ranges and job opportunities.
+
+### 📝 Resume Builder
+
+- AI-generated professional summaries using **Gemini API**.
+- Customize and export resumes in multiple formats.
+- Add skills, experience, education, and projects.
+
+### 🔥 Growth Tools
+
+- Resume and cover letter builder.
+- AI-driven interview preparation.
+- Weekly updates on industry trends via **Inngest API**.
+
+### 🔐 Authentication
+
+- Secure sign-up and login using **Clerk**.
+- User dashboard with personalized insights.
+
+## 📂 Project Structure
+
+```
+ElevateAI/
+├── app/
+│   ├── (main)/
+│   │   ├── dashboard/
+│   │   │   ├── _components/
+│   │   │   │   └── dashboard-view.jsx
+│   │   ├── resume/
+│   │   │   ├── _components/
+│   │   │   │   └── resume-builder.jsx
+│   ├── lib/
+│   │   ├── schema.js
+│   ├── page.js
+├── components/
+│   ├── header.jsx
+│   ├── ui/
+│   │   ├── button.jsx
+│   │   ├── dropdown-menu.jsx
+│   │   ├── card.jsx
+│   │   ├── badge.jsx
+│   │   ├── progress.jsx
+├── public/
+│   ├── favicon.ico
+│   ├── cc.png
+├── README.md
+├── package.json
+├── next.config.js
+├── .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Tech Stack
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+- **Frontend**: React, Tailwind CSS
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Backend**: Next.js (App Router)
 
-## Learn More
+- **AI & Insights**: Gemini API (Google AI)
 
-To learn more about Next.js, take a look at the following resources:
+- **Authentication**: Clerk
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Automation & Updates**: Inngest API
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+-
 
-## Deploy on Vercel
+  ### 🗄️ Database
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Primary Database**: Neon DB (PostgreSQL)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## ⚙️ Setup & Installation
+
+### 1️⃣ Clone the Repository
+
+```bash
+https://github.com/ashutoshg-2005/ElevateAI.git
+cd ElevateAI
+```
+
+### 2️⃣ Install Dependencies
+
+```bash
+npm install  # or yarn install
+```
+
+### 3️⃣ Set Up Environment Variables
+
+Create a `.env.local` file and add the required API keys:
+
+```ini
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_key
+CLERK_SECRET_KEY=your_clerk_secret
+NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_key
+NEXT_PUBLIC_INNGEST_API_KEY=your_inngest_key
+```
+
+### 4️⃣ Run the Development Server
+
+```bash
+npm run dev  # or yarn dev
+```
+
+Visit [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 🚀 Deployment
+
+The easiest way to deploy your Next.js app is using **Vercel**.
+
+### Deploy on Vercel
+
+Click the button below to deploy:
+
+[Elevate AI Beta](https://elevate-ai-beta.vercel.app/)
+
+
+
+## 📖 Learn More
+
+- [Next.js Docs](https://nextjs.org/docs)
+- [Clerk Docs](https://clerk.com/docs)
+- [Gemini API Docs](https://ai.google.dev/)
+- [Inngest Docs](https://inngest.com/docs)
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to open issues and pull requests.
+
+## 📜 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+
