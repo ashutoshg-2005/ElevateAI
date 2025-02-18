@@ -2,12 +2,10 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/header";
-import {  ClerkProvider } from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "sonner";
-import { Analytics } from "@vercel/analytics/react"
-import { SpeedInsights } from "@vercel/speed-insights/next"
-
-
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,26 +14,20 @@ export const metadata = {
   description: "",
 };
 
-
 export default function RootLayout({ children }) {
   return (
     <ClerkProvider>
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${inter.className} `}
-      >
-       <ThemeProvider
+      <html lang="en" suppressHydrationWarning>
+        <body className={`${inter.className}`}>
+          <ThemeProvider
             attribute="class"
             defaultTheme="dark"
             enableSystem
             disableTransitionOnChange
           >
             <Header />
-          <main className="min-h-screen"> 
-            {children}
-          </main>
-          <Toaster richColors/>
-
+            <main className="min-h-screen">{children}</main>
+            <Toaster richColors />
             <footer className="bg-muted/50 py-12">
               <div className="container mx-auto px-4 text-center text-gray-200">
                 <p>Empowering Your Career, One Step at a Time.</p>
@@ -44,8 +36,8 @@ export default function RootLayout({ children }) {
           </ThemeProvider>
           <Analytics />
           <SpeedInsights />
-      </body>
-    </html>
+        </body>
+      </html>
     </ClerkProvider>
   );
 }
