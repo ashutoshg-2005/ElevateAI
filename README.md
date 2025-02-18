@@ -114,7 +114,7 @@ Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## 🚀 Deployment
 
-Below is the deplyed website 
+Below is the deployed website 
 
 [Elevate AI Beta](https://elevate-ai-beta.vercel.app/)
 
