@@ -4,6 +4,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/header";
 import {  ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "sonner";
+import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 
 
@@ -40,6 +42,8 @@ export default function RootLayout({ children }) {
               </div>
             </footer>
           </ThemeProvider>
+          <Analytics />
+          <SpeedInsights />
       </body>
     </html>
     </ClerkProvider>
