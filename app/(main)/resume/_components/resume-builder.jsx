@@ -10,6 +10,7 @@ import {
   Loader2,
   Monitor,
   Save,
+  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import MDEditor from "@uiw/react-md-editor";
@@ -17,12 +18,13 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { saveResume } from "@/actions/resume";
+import { saveResume, improveWithAI } from "@/actions/resume";
 import { EntryForm } from "./entry-form";
 import useFetch from "@/hooks/use-fetch";
 import { useUser } from "@clerk/nextjs";
 import { entriesToMarkdown } from "@/app/lib/helper";
 import { resumeSchema } from "@/app/lib/schema";
+import html2pdf from "html2pdf.js/dist/html2pdf.min.js";
 
 export default function ResumeBuilder({ initialContent }) {
   const [activeTab, setActiveTab] = useState("edit");
@@ -35,6 +37,7 @@ export default function ResumeBuilder({ initialContent }) {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(resumeSchema),
@@ -114,7 +117,6 @@ export default function ResumeBuilder({ initialContent }) {
   const generatePDF = async () => {
     setIsGenerating(true);
     try {
-      const html2pdf = (await import("html2pdf.js")).default;
       const element = document.getElementById("resume-pdf");
       const opt = {
         margin: [15, 15],
@@ -144,6 +146,67 @@ export default function ResumeBuilder({ initialContent }) {
     } catch (error) {
       console.error("Save error:", error);
     }
+  };
+
+  const {
+    loading: isImprovingSummary,
+    fn: improveSummaryWithAIFn,
+    data: improvedSummary,
+    error: improveSummaryError,
+  } = useFetch(improveWithAI);
+
+  const {
+    loading: isImprovingSkills,
+    fn: improveSkillsWithAIFn,
+    data: improvedSkills,
+    error: improveSkillsError,
+  } = useFetch(improveWithAI);
+
+  // Handle improvement results
+  useEffect(() => {
+    if (improvedSummary && !isImprovingSummary) {
+      setValue("summary", improvedSummary);
+      toast.success("Summary improved successfully!");
+    }
+    if (improveSummaryError) {
+      toast.error(improveSummaryError.message || "Failed to improve summary");
+    }
+  }, [improvedSummary, improveSummaryError, isImprovingSummary, setValue]);
+
+  useEffect(() => {
+    if (improvedSkills && !isImprovingSkills) {
+      setValue("skills", improvedSkills);
+      toast.success("Skills improved successfully!");
+    }
+    if (improveSkillsError) {
+      toast.error(improveSkillsError.message || "Failed to improve skills");
+    }
+  }, [improvedSkills, improveSkillsError, isImprovingSkills, setValue]);
+
+  const handleImproveSummary = async () => {
+    const summary = watch("summary");
+    if (!summary) {
+      toast.error("Please enter a summary first");
+      return;
+    }
+
+    await improveSummaryWithAIFn({
+      current: summary,
+      type: "summary",
+    });
+  };
+
+  const handleImproveSkills = async () => {
+    const skills = watch("skills");
+    if (!skills) {
+      toast.error("Please enter skills first");
+      return;
+    }
+
+    await improveSkillsWithAIFn({
+      current: skills,
+      type: "skills",
+    });
   };
 
   return (
@@ -217,7 +280,7 @@ export default function ResumeBuilder({ initialContent }) {
                   <Input
                     {...register("contactInfo.mobile")}
                     type="tel"
-                    placeholder="+1 234 567 8900"
+                    placeholder="+91 1234567890"
                   />
                   {errors.contactInfo?.mobile && (
                     <p className="text-sm text-red-500">
@@ -258,7 +321,27 @@ export default function ResumeBuilder({ initialContent }) {
 
             {/* Summary */}
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">Professional Summary</h3>
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-medium">Professional Summary</h3>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleImproveSummary}
+                  disabled={isImprovingSummary}
+                >
+                  {isImprovingSummary ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Improving...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      Improve with AI
+                    </>
+                  )}
+                </Button>
+              </div>
               <Controller
                 name="summary"
                 control={control}
@@ -278,7 +361,27 @@ export default function ResumeBuilder({ initialContent }) {
 
             {/* Skills */}
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">Skills</h3>
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-medium">Skills</h3>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleImproveSkills}
+                  disabled={isImprovingSkills}
+                >
+                  {isImprovingSkills ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Improving...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      Improve with AI
+                    </>
+                  )}
+                </Button>
+              </div>
               <Controller
                 name="skills"
                 control={control}
