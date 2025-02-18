@@ -101,6 +101,7 @@ NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_key
 CLERK_SECRET_KEY=your_clerk_secret
 NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_key
 NEXT_PUBLIC_INNGEST_API_KEY=your_inngest_key
+DATABSE_URL=your_neondb_api_key
 ```
 
 ### 4️⃣ Run the Development Server
