@@ -114,11 +114,7 @@ Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## 🚀 Deployment
 
-The easiest way to deploy your Next.js app is using **Vercel**.
-
-### Deploy on Vercel
-
-Click the button below to deploy:
+Below is the deplyed website 
 
 [Elevate AI Beta](https://elevate-ai-beta.vercel.app/)
 
