@@ -130,7 +130,8 @@ export default function ResumeBuilder({ initialContent }) {
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
       };
 
-      await html2pdf().set(opt).from(element).save();
+      // Fix: Correctly use the html2pdf library
+      await html2pdf(element, opt);
     } catch (error) {
       console.error("PDF generation error:", error);
     } finally {
