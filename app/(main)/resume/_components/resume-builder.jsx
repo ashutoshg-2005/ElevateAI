@@ -122,18 +122,26 @@ export default function ResumeBuilder({ initialContent }) {
     setIsGenerating(true);
     try {
       const element = document.getElementById("resume-pdf");
+      
+      // Import html2pdf dynamically when the function is called
+      const html2pdfLib = await import("html2pdf.js");
+      
+      // Set PDF options
       const opt = {
-        margin: [15, 15],
+        margin: 15,
         filename: "resume.pdf",
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: { scale: 2 },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
       };
 
-      // Fix: Correctly use the html2pdf library
-      await html2pdf(element, opt);
+      // Generate PDF using the correct method chain
+      await html2pdfLib.default(element, opt);
+      
+      toast.success("PDF downloaded successfully!");
     } catch (error) {
       console.error("PDF generation error:", error);
+      toast.error("Failed to generate PDF: " + error.message);
     } finally {
       setIsGenerating(false);
     }
