@@ -87,30 +87,87 @@ export default function ResumeBuilder({ initialContent }) {
     }
   }, [saveResult, saveError, isSaving]);
 
-  const getContactMarkdown = () => {
+  const getFormattedHeader = () => {
     const { contactInfo } = formValues;
-    const parts = [];
-    if (contactInfo.email) parts.push(`📧 ${contactInfo.email}`);
-    if (contactInfo.mobile) parts.push(`📱 ${contactInfo.mobile}`);
-    if (contactInfo.linkedin)
-      parts.push(`💼 [LinkedIn](${contactInfo.linkedin})`);
-    if (contactInfo.twitter) parts.push(`🐦 [Twitter](${contactInfo.twitter})`);
+    let header = `# ${user?.fullName || 'Your Name'}\n\n`;
+    
+    // Add "Applying for:" line if job title exists
+    if (contactInfo.jobTitle) {
+      header += `Applying for: ${contactInfo.jobTitle}\n\n`;
+    }
+    
+    // Contact information in a single line with icons
+    const contacts = [];
+    if (contactInfo.mobile) contacts.push(`📞 ${contactInfo.mobile}`);
+    if (contactInfo.email) contacts.push(`📧 ${contactInfo.email}`);
+    if (contactInfo.linkedin) contacts.push(`🔗 ${contactInfo.linkedin}`);
+    if (contactInfo.twitter) contacts.push(`🌐 ${contactInfo.twitter}`);
+    if (contactInfo.website) contacts.push(`🏠 ${contactInfo.website}`);
+    
+    if (contacts.length > 0) {
+      header += contacts.join(' | ') + '\n\n';
+    }
+    
+    return header;
+  };
 
-    return parts.length > 0
-      ? `## <div align="center">${user.fullName}</div>
-        \n\n<div align="center">\n\n${parts.join(" | ")}\n\n</div>`
-      : "";
+  const formatSection = (sectionTitle, entries) => {
+    if (!entries || entries.length === 0) return null;
+    
+    let section = `## ${sectionTitle}\n\n`;
+    
+    entries.forEach((entry, index) => {
+      // Institution/Company and Location on the same line
+      section += `### ${entry.title}`;
+      if (entry.location) {
+        section += ` <div style="float: right;">${entry.location}</div>`;
+      }
+      section += '\n';
+      
+      // Role/Position and dates on the same line
+      if (entry.subtitle) {
+        section += `*${entry.subtitle}*`;
+      }
+      if (entry.startDate || entry.endDate) {
+        const dates = [];
+        if (entry.startDate) dates.push(formatDate(entry.startDate));
+        if (entry.endDate) dates.push(formatDate(entry.endDate));
+        section += ` <div style="float: right;">${dates.join(' - ')}</div>`;
+      }
+      section += '\n\n';
+      
+      // Description as bullet points
+      if (entry.description) {
+        const lines = entry.description.split('\n').filter(line => line.trim());
+        lines.forEach(line => {
+          section += `- ${line}\n`;
+        });
+        section += '\n';
+      }
+    });
+    
+    return section;
+  };
+
+  const formatDate = (dateStr) => {
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-US', { month: '2-digit', year: '2-digit' });
+    } catch (e) {
+      return dateStr;
+    }
   };
 
   const getCombinedContent = () => {
     const { summary, skills, experience, education, projects } = formValues;
+    // Make summary optional - only include if it has content
     return [
-      getContactMarkdown(),
-      summary && `## Professional Summary\n\n${summary}`,
+      getFormattedHeader(),
+      education && formatSection("Education", education),
+      projects && formatSection("Projects", projects),
+      experience && formatSection("Experience", experience),
       skills && `## Skills\n\n${skills}`,
-      entriesToMarkdown(experience, "Work Experience"),
-      entriesToMarkdown(education, "Education"),
-      entriesToMarkdown(projects, "Projects"),
+      summary && `## Professional Summary\n\n${summary}`, // Make summary optional and move to lower position
     ]
       .filter(Boolean)
       .join("\n\n");
@@ -126,13 +183,14 @@ export default function ResumeBuilder({ initialContent }) {
       // Import html2pdf dynamically when the function is called
       const html2pdfLib = await import("html2pdf.js");
       
-      // Set PDF options
+      // Updated PDF styling options to match the desired format
       const opt = {
-        margin: 15,
+        margin: [15, 15],
         filename: "resume.pdf",
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: { scale: 2 },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
 
       // Generate PDF using the correct method chain
@@ -275,6 +333,14 @@ export default function ResumeBuilder({ initialContent }) {
               <h3 className="text-lg font-medium">Contact Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-lg bg-muted/50">
                 <div className="space-y-2">
+                  <label className="text-sm font-medium">Job Title (Position applying for)</label>
+                  <Input
+                    {...register("contactInfo.jobTitle")}
+                    type="text"
+                    placeholder="e.g. Senior Developer, Marketing Manager"
+                  />
+                </div>
+                <div className="space-y-2">
                   <label className="text-sm font-medium">Email</label>
                   <Input
                     {...register("contactInfo.email")}
@@ -328,6 +394,16 @@ export default function ResumeBuilder({ initialContent }) {
                       {errors.contactInfo.twitter.message}
                     </p>
                   )}
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">
+                    Personal Website
+                  </label>
+                  <Input
+                    {...register("contactInfo.website")}
+                    type="url"
+                    placeholder="https://yourwebsite.com"
+                  />
                 </div>
               </div>
             </div>

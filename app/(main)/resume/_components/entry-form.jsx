@@ -16,7 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { entrySchema } from "@/app/lib/schema";
-import { Sparkles, PlusCircle, X, Pencil, Save, Loader2 } from "lucide-react";
+import { Sparkles, PlusCircle, X, Loader2 } from "lucide-react";
 import { improveWithAI } from "@/actions/resume";
 import { toast } from "sonner";
 import useFetch from "@/hooks/use-fetch";
@@ -42,6 +42,7 @@ export function EntryForm({ type, entries, onChange }) {
     defaultValues: {
       title: "",
       organization: "",
+      location: "",
       startDate: "",
       endDate: "",
       description: "",
@@ -55,7 +56,7 @@ export function EntryForm({ type, entries, onChange }) {
     const formattedEntry = {
       ...data,
       startDate: formatDisplayDate(data.startDate),
-      endDate: data.current ? "" : formatDisplayDate(data.endDate),
+      endDate: data.current ? "Present" : formatDisplayDate(data.endDate),
     };
 
     onChange([...entries, formattedEntry]);
@@ -76,7 +77,6 @@ export function EntryForm({ type, entries, onChange }) {
     error: improveError,
   } = useFetch(improveWithAI);
 
-  // Add this effect to handle the improvement result
   useEffect(() => {
     if (improvedContent && !isImproving) {
       setValue("description", improvedContent);
@@ -87,7 +87,6 @@ export function EntryForm({ type, entries, onChange }) {
     }
   }, [improvedContent, improveError, isImproving, setValue]);
 
-  // Replace handleImproveDescription with this
   const handleImproveDescription = async () => {
     const description = watch("description");
     if (!description) {
@@ -97,7 +96,7 @@ export function EntryForm({ type, entries, onChange }) {
 
     await improveWithAIFn({
       current: description,
-      type: type.toLowerCase(), // 'experience', 'education', or 'project'
+      type: type.toLowerCase(),
     });
   };
 
@@ -107,24 +106,31 @@ export function EntryForm({ type, entries, onChange }) {
         {entries.map((item, index) => (
           <Card key={index}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {item.title} @ {item.organization}
-              </CardTitle>
-              <Button
-                variant="outline"
-                size="icon"
-                type="button"
-                onClick={() => handleDelete(index)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
+              <div>
+                <CardTitle className="text-sm font-medium">
+                  {item.title}
+                </CardTitle>
+                <p className="text-xs text-muted-foreground">
+                  {item.organization} {item.location && `• ${item.location}`}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <p className="text-xs text-muted-foreground">
+                  {item.current
+                    ? `${item.startDate} - Present`
+                    : `${item.startDate} - ${item.endDate}`}
+                </p>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  type="button"
+                  onClick={() => handleDelete(index)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {item.current
-                  ? `${item.startDate} - Present`
-                  : `${item.startDate} - ${item.endDate}`}
-              </p>
               <p className="mt-2 text-sm whitespace-pre-wrap">
                 {item.description}
               </p>
@@ -141,8 +147,15 @@ export function EntryForm({ type, entries, onChange }) {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
+                <label className="text-sm font-medium">Title/Institution</label>
                 <Input
-                  placeholder="Title/Position"
+                  placeholder={
+                    type === "Education"
+                      ? "University/School"
+                      : type === "Experience"
+                      ? "Company/Organization"
+                      : "Project Title"
+                  }
                   {...register("title")}
                   error={errors.title}
                 />
@@ -151,8 +164,21 @@ export function EntryForm({ type, entries, onChange }) {
                 )}
               </div>
               <div className="space-y-2">
+                <label className="text-sm font-medium">
+                  {type === "Education"
+                    ? "Degree/Certification"
+                    : type === "Experience"
+                    ? "Position/Role"
+                    : "Technologies"}
+                </label>
                 <Input
-                  placeholder="Organization/Company"
+                  placeholder={
+                    type === "Education"
+                      ? "B.S. Computer Science"
+                      : type === "Experience"
+                      ? "Software Engineer"
+                      : "React, Node.js, etc."
+                  }
                   {...register("organization")}
                   error={errors.organization}
                 />
@@ -164,8 +190,17 @@ export function EntryForm({ type, entries, onChange }) {
               </div>
             </div>
 
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Location</label>
+              <Input
+                placeholder="City, Country or Remote"
+                {...register("location")}
+              />
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
+                <label className="text-sm font-medium">Start Date</label>
                 <Input
                   type="month"
                   {...register("startDate")}
@@ -178,6 +213,7 @@ export function EntryForm({ type, entries, onChange }) {
                 )}
               </div>
               <div className="space-y-2">
+                <label className="text-sm font-medium">End Date</label>
                 <Input
                   type="month"
                   {...register("endDate")}
@@ -208,8 +244,11 @@ export function EntryForm({ type, entries, onChange }) {
             </div>
 
             <div className="space-y-2">
+              <label className="text-sm font-medium">
+                Description (enter each point on a new line)
+              </label>
               <Textarea
-                placeholder={`Description of your ${type.toLowerCase()}`}
+                placeholder={`Description of your ${type.toLowerCase()} (each line will become a bullet point)`}
                 className="h-32"
                 {...register("description")}
                 error={errors.description}

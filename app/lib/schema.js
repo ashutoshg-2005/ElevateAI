@@ -32,12 +32,15 @@ export const contactSchema = z.object({
   mobile: z.string().optional(),
   linkedin: z.string().optional(),
   twitter: z.string().optional(),
+  website: z.string().optional(),
+  jobTitle: z.string().optional(), // Add job title field
 });
 
 export const entrySchema = z
   .object({
     title: z.string().min(1, "Title is required"),
     organization: z.string().min(1, "Organization is required"),
+    location: z.string().optional(), // Add location field
     startDate: z.string().min(1, "Start date is required"),
     endDate: z.string().optional(),
     description: z.string().min(1, "Description is required"),
@@ -58,7 +61,7 @@ export const entrySchema = z
 
 export const resumeSchema = z.object({
   contactInfo: contactSchema,
-  summary: z.string().min(1, "Professional summary is required"),
+  summary: z.string().optional(), // Make summary optional
   skills: z.string().min(1, "Skills are required"),
   experience: z.array(entrySchema),
   education: z.array(entrySchema),
